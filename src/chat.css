@@ -1,0 +1,76 @@
+body{
+    padding-bottom: 50px;
+}
+
+#form {
+    width: 100%;
+    background: grey;
+    padding: 5px;
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    border: 1px black solid;
+}
+    
+#form input {
+    width: 70%;
+    padding: 10px;
+    border: 1px black solid;
+    border-radius: 10px;
+}
+    
+#form button {
+    width: 20%;
+    background: rgb(44, 93, 255);
+    border: 1px black solid;
+    border-radius: 10px;
+    padding: 10px;
+    margin-left: 5px; 
+}
+    
+#form button:active {
+    background: rgb(118, 150, 255);
+}
+    
+#messages {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+#messages li {
+    padding: 5px 10px;
+}
+    
+#messages li:nth-child(odd)
+{
+    background: #eee;
+    color :blue;
+}
+
+.newMessage
+{
+    background: #51f567;
+    color : black;
+}
+
+#idUser
+{
+    background-color: rgb(245, 168, 222);
+    color: black;
+    text-align: center;
+}
+
+.newConnect
+{
+    background-color: cornflowerblue;
+}
+
+.newDisconnect
+{
+    background-color: blueviolet;
+}

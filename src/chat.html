@@ -1,0 +1,132 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>Chat</title>
+    <link rel="stylesheet" type="text/css" href="http://localhost:3000/chatcss">
+</head>
+
+<body>
+    <div id="userList">
+    </div>
+    <ul id="messages">
+    </ul>
+    <div id="form">
+        <input id="messageInput" placeholder="Saisissez votre message..." />
+        <span id="idUser"></span>
+        <button onclick="sendMessage()">Envoyer</button>
+    </div>
+    <!-- //pour pouvoir utiliser les fonctions de io, on importe soket.io -->
+    <script src="/socket.io/socket.io.js"></script>
+    <!-- ce js est executé par la navigateur -->
+    <script>
+        let pseudo = ""; //prompt("Saisissez un pseudo: ");
+        let socket = io();//on lie la fonction io() que l'on stock dans socket (ou toto, ou tartuffe)
+        //socket.emit('setPseudo', pseudo);
+        console.log(pseudo);
+
+
+        //qd l'emetteur emet un message
+        function sendMessage() {
+            let messageInput = document.getElementById("messageInput");
+            socket.emit('chat_message', messageInput.value);// on emet un evenement "chat_message" qui recupere la valeur de l'input messageInput
+            messageInput.value =  "";
+        }
+        //la presentation du message envoyé
+        socket.on('chat_message', function (msg) {//cela va etre declencher qd le client va recevoir du serveur "chat_message"
+            const split = msg.split(" : ");// split[0]identifiant  // split[1] text du msg 
+            let messageList = document.getElementById("messages");
+            let message = document.createElement("li");
+
+            let idNumber = document.getElementById("idUser");     
+            if (idNumber.innerHTML == split[0] || pseudo == split[0] ){
+                message.className = "newMessage";
+            }
+            
+            message.innerHTML =  msg;
+            messageList.appendChild(message);
+        });
+
+
+        socket.on("connection_successful", function(evenData){
+
+            let pseudo = prompt("Saisissez un pseudo: ");
+            socket.emit('setPseudo', pseudo);   
+
+
+            console.log(evenData);
+            let idNumber = document.getElementById("idUser");       
+            idUser.innerHTML = evenData.id ;
+            evenData.histo.forEach(msg => {
+                let text = document.getElementById("messages");
+                let histoText = document.createElement("li");
+                histoText.innerHTML =  msg;
+                text.appendChild(histoText);
+            }); 
+            // pour s'afficher nous meme dans la liste des users connectés
+            let userList = document.getElementById("userList");
+            let user = document.createElement("span");
+            user.id = evenData.id;
+            user.innerHTML = `${evenData.id} : ${pseudo} `;
+            userList.appendChild(user);
+
+            for (let i=0; i<evenData.userList.length; i++){
+                let userList = document.getElementById("userList");
+                let user = document.createElement("span");
+                let currentUser = evenData.userList[i];
+                user.id = currentUser.id;
+                user.innerHTML = `${currentUser.id}: ${currentUser.pseudo} `;
+                userList.appendChild(user);
+            }   
+
+            
+        });
+
+        socket.on("user_connect", function(textConnect){
+            console.log(textConnect);
+            // affichage du msg de connexion
+            let text = document.getElementById("messages");
+            let newConn = document.createElement("li");
+            newConn.className = "newConnect";
+            newConn.innerHTML =  textConnect.msg;
+            text.appendChild(newConn);
+
+            // affiche de la liste des utilisateurs
+            let userList = document.getElementById("userList");
+            let user = document.createElement("span");
+            user.innerHTML = `${textConnect.id} : ${textConnect.pseudo} `;
+            userList.appendChild(user);
+
+
+             
+        });
+
+        socket.on("user_disconnect", function(textDisconnect){
+            console.log(textDisconnect);
+            let text = document.getElementById("messages");
+            let disconn = document.createElement("li");
+            disconn.className = "newDisconnect";
+            disconn.innerHTML =  textDisconnect.msg;
+            text.appendChild(disconn);
+
+            //ici, on supprime la balise span correspondante à l'utilisateur
+            let userElement = document.getElementById(textDisconnect.id);
+            userElement.remove();//on supprime le span du document
+        });
+
+        socket.on('disconnet', function(msg){
+            let userList = document.getElementById('userList');
+            userList.innerHTML = "";
+        });
+
+        
+
+        
+            
+        
+
+        
+    </script>
+</body>
+
+</html>
